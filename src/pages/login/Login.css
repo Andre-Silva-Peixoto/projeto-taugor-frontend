@@ -1,0 +1,23 @@
+.autenticacao-container-maior{
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+.autenticacao-container-maior .autenticacao-form{
+    display: flex;
+    flex-direction: column;
+    gap: 5%;
+}
+.autenticacao-container-maior .autenticacao-form p{
+    margin: 1em 0 0 0;
+}
+.autenticacao-container-maior .autenticacao-form a{
+    margin: 0 0 1em 0;
+}
+.autenticacao-texto-erro{
+    color: red;
+}
