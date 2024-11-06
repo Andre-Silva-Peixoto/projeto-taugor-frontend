@@ -5,6 +5,7 @@ import Login from './pages/login/Login';
 import Registro from './pages/registro/Registro';
 import PaginaInicial from './pages/paginaInicial/PaginaInicial';
 import CadastrarFuncionarios from './pages/cadastrarFuncionario/CadastrarFuncionario';
+import PrivateRoute from './components/rotaPrivada/RotaPrivada';
 const App: React.FC = () => {
   return (
     <AuthProvider>
@@ -12,8 +13,25 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/registro" element={<Registro />} />
-          <Route path="/pagina-inicial" element={<PaginaInicial />} />
-          <Route path="/cadastrar-funcionarios" element={<CadastrarFuncionarios />} />
+
+          <Route path="/pagina-inicial"
+            element={
+              <PrivateRoute element={
+                <PaginaInicial />
+              }
+              />
+            }
+          />
+
+          <Route path="/cadastrar-funcionarios"
+            element={
+              <PrivateRoute element={
+                <CadastrarFuncionarios />
+              }
+              />
+            }
+          />
+          
         </Routes>
       </Router>
     </AuthProvider>

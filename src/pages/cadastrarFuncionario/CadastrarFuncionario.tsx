@@ -15,24 +15,36 @@ import {
     Grid2
 } from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import { getFunctions, httpsCallable } from "firebase/functions"; // Importar funções do Firebase
+import { getAuth } from "firebase/auth";
 
 // Função para cadastrar funcionário
 const cadastrarFuncionario = async (formData: FormFields) => {
-    const functions = getFunctions(); 
-    const funcaoCadastrarFuncionario = httpsCallable(functions, "cadastrarFuncionario");
-
+    const auth = getAuth();
+    const token = await auth.currentUser?.getIdToken();
+    const url = "https://us-central1-projeto-taugor-andrespx.cloudfunctions.net/app/cadastrar-funcionario"; 
+    
     try {
-        const response = await funcaoCadastrarFuncionario(formData);
-        console.log("ID do funcionário:", response.data); // A resposta é geralmente encontrada em response.data
-        return response.data; // Retornar a resposta se necessário
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify(formData),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro ao cadastrar funcionário: ${response.statusText}`);
+        }
+
+        console.log("Funcionário cadastrado com sucesso");
+        return true;
     } catch (error) {
         console.error("Erro ao cadastrar funcionário:", error);
-        throw error; // Lançar o erro para tratamento posterior
+        throw error;
     }
 };
 
-// Definindo o tipo para os campos do formulário
 interface FormFields {
     nome: string;
     sexo: string;
@@ -67,14 +79,8 @@ const CadastrarFuncionarios = () => {
     const validateForm = () => {
         let tempErrors: Partial<FormFields> = {};
         if (!form.nome) tempErrors.nome = "Nome é obrigatório";
-        if (!form.sexo) tempErrors.sexo = "Sexo é obrigatório";
-        if (!form.endereco) tempErrors.endereco = "Endereço é obrigatório";
-        if (!form.telefone) tempErrors.telefone = "Telefone é obrigatório";
-        if (!form.dataAniversario) tempErrors.dataAniversario = "Data de aniversário é obrigatória";
         if (!form.cargo) tempErrors.cargo = "Cargo é obrigatório";
         if (!form.dataAdmissao) tempErrors.dataAdmissao = "Data de admissão é obrigatória";
-        if (!form.setor) tempErrors.setor = "Setor é obrigatório";
-        if (!form.salario) tempErrors.salario = "Salário é obrigatório";
 
         setErrors(tempErrors);
         return Object.keys(tempErrors).length === 0;
@@ -99,11 +105,11 @@ const CadastrarFuncionarios = () => {
                 });
                 // Adicionar uma mensagem de sucesso para o usuário
             } catch (error) {
+                console.error("Erro ao enviar o formulário:", error);
                 // Tratar erro se necessário
             }
         }
     };
-    
 
     return (
         <Container maxWidth="lg" sx={{ mt: 4 }} style={{ display: 'flex' }}>
@@ -262,12 +268,8 @@ const CadastrarFuncionarios = () => {
                     </Box>
                 </Paper>
             </Box>
-
-            <Box sx={{ flex: 1, pl: 2 }}>
-                
-            </Box>
         </Container>
     );
-};
+}
 
 export default CadastrarFuncionarios;

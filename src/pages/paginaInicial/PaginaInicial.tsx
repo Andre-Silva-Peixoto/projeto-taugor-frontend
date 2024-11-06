@@ -4,10 +4,21 @@ import { useNavigate } from 'react-router-dom';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import LoginIcon from '@mui/icons-material/Login';
 import DescriptionIcon from '@mui/icons-material/Description';
+import { getAuth, signOut } from 'firebase/auth';
 
 const PaginaInicial = () => {
   const navigate = useNavigate();
+  const auth = getAuth();
 
+  function Deslogar() {
+    signOut(auth)
+      .then(() => {
+        navigate('/');
+      })
+      .catch((error) => {
+        console.error('Erro ao deslogar: ', error.message);
+      });
+  }
   return (
     <Container maxWidth="md">
       <Paper elevation={3} sx={{ padding: 4, textAlign: 'center', marginTop: 8 }}>
@@ -39,7 +50,7 @@ const PaginaInicial = () => {
             variant="contained"
             color="primary"
             startIcon={<PersonAddIcon />}
-            onClick={() => navigate('/register')}
+            onClick={() => navigate('/cadastrar-funcionarios')}
             sx={{ paddingX: 3 }}
           >
             Cadastro de Funcionário
@@ -48,10 +59,10 @@ const PaginaInicial = () => {
             variant="outlined"
             color="primary"
             startIcon={<LoginIcon />}
-            onClick={() => navigate('/login')}
+            onClick={Deslogar}
             sx={{ paddingX: 3 }}
           >
-            Acessar Conta
+            Deslogar
           </Button>
         </Stack>
       </Paper>
