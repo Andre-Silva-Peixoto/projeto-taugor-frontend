@@ -16,15 +16,15 @@ import {
 } from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import { getAuth } from "firebase/auth";
+const apiUrl = process.env.REACT_APP_API_URL;
 
 // Função para cadastrar funcionário
 const cadastrarFuncionario = async (formData: FormFields) => {
     const auth = getAuth();
     const token = await auth.currentUser?.getIdToken();
-    const url = "https://us-central1-projeto-taugor-andrespx.cloudfunctions.net/app/cadastrar-funcionario"; 
-    
+        
     try {
-        const response = await fetch(url, {
+        const response = await fetch(`${apiUrl}/cadastrar-funcionario`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
