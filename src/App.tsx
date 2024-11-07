@@ -16,18 +16,22 @@ const App: React.FC = () => {
 
           <Route path="/pagina-inicial"
             element={
-              <PrivateRoute element={
-                <PaginaInicial />
-              }
+              <PrivateRoute 
+                element={
+                  <PaginaInicial />
+                }
+                nomeDaPagina={'Dashboard de Funcionários'}
               />
             }
           />
 
-          <Route path="/cadastrar-funcionarios"
+          <Route path="/cadastrar-funcionario"
             element={
-              <PrivateRoute element={
-                <CadastrarFuncionarios />
-              }
+              <PrivateRoute 
+                element={
+                  <CadastrarFuncionarios />
+                }
+                nomeDaPagina={'Cadastrar Funcionário'}
               />
             }
           />
