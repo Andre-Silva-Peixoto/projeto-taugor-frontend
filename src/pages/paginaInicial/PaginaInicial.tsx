@@ -37,10 +37,10 @@ const PaginaInicial = () => {
                 color="secondary"
                 startIcon={<DescriptionIcon />}
                 fullWidth
-                onClick={() => navigate('/gerenciamento')}
+                onClick={() => navigate('/gerenciamento-de-funcionarios')}
                 sx={{ padding: 2 }}
               >
-                Gerenciamento
+                Gerenciamento de Funcionários
               </Button>
             </Grid2>
             <Grid2 component={'div'} size={{xs: 12, sm: 4}}>

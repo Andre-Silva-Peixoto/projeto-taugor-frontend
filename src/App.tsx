@@ -6,6 +6,7 @@ import Registro from './pages/registro/Registro';
 import PaginaInicial from './pages/paginaInicial/PaginaInicial';
 import CadastrarFuncionarios from './pages/cadastrarFuncionario/CadastrarFuncionario';
 import PrivateRoute from './components/rotaPrivada/RotaPrivada';
+import GerenciamentoDeFuncionarios from './pages/gerenciamentoDeFuncionarios/GerenciamentoDeFuncionarios';
 const App: React.FC = () => {
   return (
     <AuthProvider>
@@ -16,7 +17,7 @@ const App: React.FC = () => {
 
           <Route path="/pagina-inicial"
             element={
-              <PrivateRoute 
+              <PrivateRoute
                 element={
                   <PaginaInicial />
                 }
@@ -27,7 +28,7 @@ const App: React.FC = () => {
 
           <Route path="/cadastrar-funcionario"
             element={
-              <PrivateRoute 
+              <PrivateRoute
                 element={
                   <CadastrarFuncionarios />
                 }
@@ -35,7 +36,18 @@ const App: React.FC = () => {
               />
             }
           />
-          
+
+          <Route path="/gerenciamento-de-funcionarios"
+            element={
+              <PrivateRoute
+                element={
+                  <GerenciamentoDeFuncionarios />
+                }
+                nomeDaPagina={'Gerenciamento de Funcionários'}
+              />
+            }
+          />
+
         </Routes>
       </Router>
     </AuthProvider>

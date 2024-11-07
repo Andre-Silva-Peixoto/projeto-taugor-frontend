@@ -54,34 +54,43 @@ const MenuLateral: React.FC<MenuLateralProps> = ({ nomeDaPagina }) => {
             </AppBar>
             <Drawer open={menuAberto} onClose={alternarMenu}>
                 <List sx={{ width: 250 }}>
+
                     <ListItemButton onClick={() => navegarPara('/pagina-inicial')}>
                         <ListItemIcon>
                             <DashboardIcon/>
                         </ListItemIcon>
                         <ListItemText primary="Dashboard de Funcionários" />
                     </ListItemButton>
+
+                    <Divider />
+
                     <ListItemButton onClick={() => navegarPara('/cadastrar-funcionario')}>
                         <ListItemIcon>
                             <PersonAddIcon />
                         </ListItemIcon>
                         <ListItemText primary="Cadastro de Funcionário" />
                     </ListItemButton>
-                    <ListItemButton onClick={() => navegarPara('/gerenciamento')}>
+
+                    <ListItemButton onClick={() => navegarPara('/gerenciamento-de-funcionarios')}>
                         <ListItemIcon>
                             <DescriptionIcon />
                         </ListItemIcon>
                         <ListItemText primary="Gerenciamento de Funcionários" />
                     </ListItemButton>
+
                     <ListItemButton onClick={() => navegarPara('/historico')}>
                         <ListItemIcon>
                             <HistoryIcon />
                         </ListItemIcon>
                         <ListItemText primary="Histórico" />
                     </ListItemButton>
+
                     <Divider />
+
                     <ListItemButton onClick={Deslogar}>
                         <ListItemText primary="Deslogar" />
                     </ListItemButton>
+
                 </List>
             </Drawer>
         </>
