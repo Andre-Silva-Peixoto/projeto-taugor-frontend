@@ -1,23 +1,26 @@
-.autenticacao-container-maior{
+.autenticacao-container-maior {
     display: flex;
-    flex-direction: column;
-    position: fixed;
     justify-content: center;
     align-items: center;
-    height: 100%;
+    height: 100vh;
+    background-color: #f4f6f9;
+}
+
+.autenticacao-form {
     width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
-.autenticacao-container-maior .autenticacao-form{
-    display: flex;
-    flex-direction: column;
-    gap: 5%;
+
+.autenticacao-form h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: 600;
+    text-align: center;
 }
-.autenticacao-container-maior .autenticacao-form p{
-    margin: 1em 0 0 0;
-}
-.autenticacao-container-maior .autenticacao-form a{
-    margin: 0 0 1em 0;
-}
-.autenticacao-texto-erro{
-    color: red;
+.autenticacao-container-maior.css-mzavur-MuiContainer-root{
+    max-width: none;
 }
