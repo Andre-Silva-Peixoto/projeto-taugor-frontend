@@ -43,7 +43,7 @@ const Login: React.FC = () => {
     // Login
     try {
       await login(email, senha);
-      navigate("/pagina-inicial");
+      navigate("/dashboard-de-funcionarios");
     } catch (error) {
       setTextoDeErro("Erro ao fazer login: " + error);
       console.error("Erro ao fazer login: ", error);

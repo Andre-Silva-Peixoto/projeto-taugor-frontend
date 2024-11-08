@@ -2,12 +2,12 @@ import React from 'react';
 import { AppBar, Divider, IconButton, ListItemButton, Toolbar, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import HistoryIcon from '@mui/icons-material/History';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { getAuth, signOut } from 'firebase/auth';
 import { Drawer, List, ListItemText, ListItemIcon } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 interface MenuLateralProps {
     nomeDaPagina: string;
@@ -55,7 +55,7 @@ const MenuLateral: React.FC<MenuLateralProps> = ({ nomeDaPagina }) => {
             <Drawer open={menuAberto} onClose={alternarMenu}>
                 <List sx={{ width: 250 }}>
 
-                    <ListItemButton onClick={() => navegarPara('/pagina-inicial')}>
+                    <ListItemButton onClick={() => navegarPara('/dashboard-de-funcionarios')}>
                         <ListItemIcon>
                             <DashboardIcon/>
                         </ListItemIcon>
@@ -78,16 +78,12 @@ const MenuLateral: React.FC<MenuLateralProps> = ({ nomeDaPagina }) => {
                         <ListItemText primary="Gerenciamento de Funcionários" />
                     </ListItemButton>
 
-                    <ListItemButton onClick={() => navegarPara('/historico')}>
-                        <ListItemIcon>
-                            <HistoryIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Histórico" />
-                    </ListItemButton>
-
                     <Divider />
 
                     <ListItemButton onClick={Deslogar}>
+                        <ListItemIcon>
+                            <LogoutIcon/>
+                        </ListItemIcon>
                         <ListItemText primary="Deslogar" />
                     </ListItemButton>
 

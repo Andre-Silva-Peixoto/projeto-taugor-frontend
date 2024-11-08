@@ -27,32 +27,6 @@ import { useNavigate } from "react-router-dom";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const cadastrarFuncionario = async (formData: FormFields, fotoUrl?: string) => {
-    const auth = getAuth();
-    const token = await auth.currentUser?.getIdToken();
-
-    try {
-        const response = await fetch(`${apiUrl}/cadastrar-funcionario`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify({ ...formData, fotoPerfil: fotoUrl }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`Erro ao cadastrar funcionário: ${response.statusText}`);
-        }
-
-        console.log("Funcionário cadastrado com sucesso");
-        return true;
-    } catch (error) {
-        console.error("Erro ao cadastrar funcionário:", error);
-        throw error;
-    }
-};
-
 interface FormFields {
     nome: string;
     sexo: string;
@@ -66,6 +40,7 @@ interface FormFields {
 }
 
 const CadastrarFuncionarios = () => {
+    const [idFuncionario, setIdFuncionario] = useState('');
     const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
     const [fotoUrl, setFotoUrl] = useState<string | null>(null);
     const [form, setForm] = useState<FormFields>({
@@ -79,6 +54,37 @@ const CadastrarFuncionarios = () => {
         setor: '',
         salario: ''
     });
+
+    const cadastrarFuncionario = async (formData: FormFields, fotoUrl?: string) => {
+        const auth = getAuth();
+        const token = await auth.currentUser?.getIdToken();
+    
+        try {
+            const response = await fetch(`${apiUrl}/cadastrar-funcionario`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ ...formData, fotoPerfil: fotoUrl }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Erro ao cadastrar funcionário: ${response.statusText}`);
+            }
+    
+            if(response.ok){
+                const data = await response.json();
+
+                setIdFuncionario(data.id);
+            }
+            console.log("Funcionário cadastrado com sucesso");
+            return true;
+        } catch (error) {
+            console.error("Erro ao cadastrar funcionário:", error);
+            throw error;
+        }
+    };
 
     const [errors, setErrors] = useState<Partial<FormFields>>({});
     const [openSnackbar, setOpenSnackbar] = useState<{ open: boolean; message: string; severity: AlertColor }>({
@@ -116,7 +122,7 @@ const CadastrarFuncionarios = () => {
     const handleUploadFoto = async () => {
         if (fotoPerfil) {
             const storage = getStorage();
-            const fotoRef = ref(storage, `perfilFotos/${fotoPerfil.name}`);
+            const fotoRef = ref(storage, `fotoPerfil/${fotoPerfil.name}`);
             await uploadBytes(fotoRef, fotoPerfil);
             const url = await getDownloadURL(fotoRef);
             setFotoUrl(url);
@@ -150,12 +156,16 @@ const CadastrarFuncionarios = () => {
     // Funções de navegação
     const handleVoltarDashboard = () => {
         setOpenDialog(false);
-        navigate('/pagina-inicial');
+        navigate('/dashboard-de-funcionarios');
     };
 
     const handleVerFuncionario = () => {
         setOpenDialog(false);
-        navigate('/funcionarios');
+        navigate('/editar-funcionario', {
+            state: {
+              idFuncionario: idFuncionario,
+            }
+          });
     };
 
     const handleCadastrarOutro = () => {

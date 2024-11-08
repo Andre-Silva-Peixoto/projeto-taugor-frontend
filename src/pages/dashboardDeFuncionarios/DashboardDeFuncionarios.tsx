@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import HistoryIcon from '@mui/icons-material/History';
 import DescriptionIcon from '@mui/icons-material/Description';
-const PaginaInicial = () => {
+const DashboardDeFuncionarios = () => {
   const navigate = useNavigate();
 
   return (
@@ -43,18 +43,6 @@ const PaginaInicial = () => {
                 Gerenciamento de Funcionários
               </Button>
             </Grid2>
-            <Grid2 component={'div'} size={{xs: 12, sm: 4}}>
-              <Button
-                variant="contained"
-                color="success"
-                startIcon={<HistoryIcon />}
-                fullWidth
-                onClick={() => navigate('/historico')}
-                sx={{ padding: 2 }}
-              >
-                Histórico
-              </Button>
-            </Grid2>
           </Grid2>
         </Paper>
       </Container>
@@ -62,4 +50,4 @@ const PaginaInicial = () => {
   );
 };
 
-export default PaginaInicial;
+export default DashboardDeFuncionarios;
