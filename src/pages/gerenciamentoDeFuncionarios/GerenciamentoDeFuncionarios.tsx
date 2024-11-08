@@ -23,20 +23,7 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
-
-interface Funcionario {
-    id: string;
-    nome: string;
-    sexo: string;
-    endereco: string;
-    telefone: string;
-    dataAniversario: string;
-    cargo: string;
-    dataAdmissao: string;
-    setor: string;
-    salario: string;
-    fotoPerfil: string;
-}
+import { Funcionario } from '../../types/Funcionario';
 
 const ListagemFuncionarios = () => {
     const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);

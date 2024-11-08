@@ -24,26 +24,16 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import { getAuth } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
+import { Funcionario } from '../../types/Funcionario';
 
 const apiUrl = process.env.REACT_APP_API_URL;
-
-interface FormFields {
-    nome: string;
-    sexo: string;
-    endereco: string;
-    telefone: string;
-    dataAniversario: string;
-    cargo: string;
-    dataAdmissao: string;
-    setor: string;
-    salario: string;
-}
 
 const CadastrarFuncionarios = () => {
     const [idFuncionario, setIdFuncionario] = useState('');
     const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
     const [fotoUrl, setFotoUrl] = useState<string | null>(null);
-    const [form, setForm] = useState<FormFields>({
+    const [form, setForm] = useState<Funcionario>({
+        id: '',
         nome: '',
         sexo: '',
         endereco: '',
@@ -52,10 +42,12 @@ const CadastrarFuncionarios = () => {
         cargo: '',
         dataAdmissao: '',
         setor: '',
-        salario: ''
+        salario: '',
+        fotoPerfil: '',
+        historico: []
     });
 
-    const cadastrarFuncionario = async (formData: FormFields, fotoUrl?: string) => {
+    const cadastrarFuncionario = async (formData: Funcionario, fotoUrl?: string) => {
         const auth = getAuth();
         const token = await auth.currentUser?.getIdToken();
     
@@ -86,7 +78,7 @@ const CadastrarFuncionarios = () => {
         }
     };
 
-    const [errors, setErrors] = useState<Partial<FormFields>>({});
+    const [errors, setErrors] = useState<Partial<Funcionario>>({});
     const [openSnackbar, setOpenSnackbar] = useState<{ open: boolean; message: string; severity: AlertColor }>({
         open: false,
         message: "",
@@ -104,7 +96,7 @@ const CadastrarFuncionarios = () => {
     };
 
     const validateForm = () => {
-        let tempErrors: Partial<FormFields> = {};
+        let tempErrors: Partial<Funcionario> = {};
         if (!form.nome) tempErrors.nome = "Nome é obrigatório";
         if (!form.sexo) tempErrors.sexo = "Sexo é obrigatório";
         if (!form.endereco) tempErrors.endereco = "Endereço é obrigatório";
@@ -170,6 +162,7 @@ const CadastrarFuncionarios = () => {
 
     const handleCadastrarOutro = () => {
         setForm({
+            id: '',
             nome: '',
             sexo: '',
             endereco: '',
@@ -178,7 +171,9 @@ const CadastrarFuncionarios = () => {
             cargo: '',
             dataAdmissao: '',
             setor: '',
-            salario: ''
+            salario: '',
+            fotoPerfil: '',
+            historico: []
         });
         setFotoPerfil(null);
         setFotoUrl(null);

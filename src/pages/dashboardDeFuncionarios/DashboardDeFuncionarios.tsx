@@ -2,7 +2,6 @@ import React from 'react';
 import { Box, Container, Typography, Button, Paper, Grid2 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import HistoryIcon from '@mui/icons-material/History';
 import DescriptionIcon from '@mui/icons-material/Description';
 const DashboardDeFuncionarios = () => {
   const navigate = useNavigate();

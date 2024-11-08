@@ -28,41 +28,16 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useNavigate, useLocation } from "react-router-dom";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { Funcionario } from '../../types/Funcionario';
+import { HistoricoItem } from '../../types/HistoricoItem';
 
 const apiUrl = process.env.REACT_APP_API_URL;
-
-interface Alteracao {
-    campo: string;
-    valorAntigo: string | number;
-    valorNovo: string | number;
-}
-interface CustomTimestamp {
-    _seconds: number;
-    _nanoseconds: number;
-}
-interface HistoricoItem {
-    data: CustomTimestamp;
-    alteracoes: Alteracao[];
-}
-
-interface FormFields {
-    nome: string;
-    sexo: string;
-    endereco: string;
-    telefone: string;
-    dataAniversario: string;
-    cargo: string;
-    dataAdmissao: string;
-    setor: string;
-    salario: string;
-    fotoPerfil: string;
-    historico: HistoricoItem[] | string;
-}
 
 const EditarFuncionario = () => {
     const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
     const [fotoUrl, setFotoUrl] = useState<string | null>(null);
-    const [form, setForm] = useState<FormFields>({
+    const [form, setForm] = useState<Funcionario>({
+        id: '',
         nome: '',
         sexo: '',
         endereco: '',
@@ -76,7 +51,7 @@ const EditarFuncionario = () => {
         historico: []
     });
     const [historico, setHistorico] = useState<HistoricoItem[]>([]);
-    const [errors, setErrors] = useState<Partial<FormFields>>({});
+    const [errors, setErrors] = useState<Partial<Funcionario>>({});
     const [openSnackbar, setOpenSnackbar] = useState<{ open: boolean; message: string; severity: AlertColor }>({
         open: false,
         message: "",
@@ -124,7 +99,7 @@ const EditarFuncionario = () => {
         return `${day}/${month}/${year} ${hours}:${minutes}`;
     };
 
-    const editarFuncionario = async (idFuncionario: string, formData: FormFields, fotoUrl?: string) => {
+    const editarFuncionario = async (idFuncionario: string, formData: Funcionario, fotoUrl?: string) => {
         const auth = getAuth();
         const token = await auth.currentUser?.getIdToken();
 
@@ -200,11 +175,11 @@ const EditarFuncionario = () => {
 
     const validateForm = (): boolean => {
         let valid = true;
-        let newErrors: Partial<FormFields> = {};
+        let newErrors: Partial<Funcionario> = {};
 
         for (let key in form) {
-            if (typeof form[key as keyof FormFields] === 'string' && form[key as keyof FormFields] === '') {
-                newErrors[key as keyof FormFields] = 'Campo obrigatório';
+            if (typeof form[key as keyof Funcionario] === 'string' && form[key as keyof Funcionario] === '') {
+                newErrors[key as keyof Funcionario] = 'Campo obrigatório';
                 valid = false;
             }
         }
