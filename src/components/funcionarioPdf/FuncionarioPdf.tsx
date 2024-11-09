@@ -186,6 +186,7 @@ const FuncionarioPdf: React.FC<FuncionarioPdfProps> = ({ funcionario }) => {
 
     useEffect(() => {
         generatePDF();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [funcionario]);
 
     return (
