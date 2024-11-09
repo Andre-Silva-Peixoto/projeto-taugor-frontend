@@ -1,3 +1,4 @@
+import { Dayjs } from "dayjs";
 import { HistoricoItem } from "./HistoricoItem";
 
 
@@ -7,9 +8,9 @@ export interface Funcionario {
     sexo: string;
     endereco: string;
     telefone: string;
-    dataAniversario: string;
+    dataAniversario: Dayjs | null;
     cargo: string;
-    dataAdmissao: string;
+    dataAdmissao: Dayjs | null;
     setor: string;
     salario: string;
     fotoPerfil: string;

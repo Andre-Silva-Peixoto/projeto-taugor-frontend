@@ -25,6 +25,10 @@ import { getAuth } from "firebase/auth";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 import { Funcionario } from '../../types/Funcionario';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { Dayjs } from 'dayjs';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -38,9 +42,9 @@ const CadastrarFuncionarios = () => {
         sexo: '',
         endereco: '',
         telefone: '',
-        dataAniversario: '',
+        dataAniversario: null,
         cargo: '',
-        dataAdmissao: '',
+        dataAdmissao: null,
         setor: '',
         salario: '',
         fotoPerfil: '',
@@ -50,7 +54,7 @@ const CadastrarFuncionarios = () => {
     const cadastrarFuncionario = async (formData: Funcionario, fotoUrl?: string) => {
         const auth = getAuth();
         const token = await auth.currentUser?.getIdToken();
-    
+
         try {
             const response = await fetch(`${apiUrl}/cadastrar-funcionario`, {
                 method: "POST",
@@ -60,12 +64,12 @@ const CadastrarFuncionarios = () => {
                 },
                 body: JSON.stringify({ ...formData, fotoPerfil: fotoUrl }),
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Erro ao cadastrar funcionário: ${response.statusText}`);
             }
-    
-            if(response.ok){
+
+            if (response.ok) {
                 const data = await response.json();
 
                 setIdFuncionario(data.id);
@@ -92,7 +96,23 @@ const CadastrarFuncionarios = () => {
     };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        const tamanhoMaximoCelular = 11;
+        // Limitar o salário para números apenas
+        if (name === 'salario') {
+            const onlyNumbers = value.replace(/\D/g, '');
+            setForm({ ...form, [name]: onlyNumbers });
+        }
+        // Formatar o telefone
+        else if (name === 'telefone') {
+            const onlyNumbers = value.replace(/\D/g, '');
+            const formattedPhone = onlyNumbers.slice(0, tamanhoMaximoCelular)
+              .replace(/^(\d{2})(\d)/g, '($1) $2')
+              .replace(/(\d{5})(\d)/, '$1-$2');
+            setForm({ ...form, [name]: formattedPhone });
+          } else {
+            setForm({ ...form, [name]: value });
+        }
     };
 
     const validateForm = () => {
@@ -101,9 +121,9 @@ const CadastrarFuncionarios = () => {
         if (!form.sexo) tempErrors.sexo = "Sexo é obrigatório";
         if (!form.endereco) tempErrors.endereco = "Endereço é obrigatório";
         if (!form.telefone) tempErrors.telefone = "Telefone é obrigatório e deve ser válido (ex. 11987654321)";
-        if (!form.dataAniversario) tempErrors.dataAniversario = "Data de Aniversário é obrigatória";
+        //if (!form.dataAniversario) tempErrors.dataAniversario = "Data de Aniversário é obrigatória";
         if (!form.cargo) tempErrors.cargo = "Cargo é obrigatório";
-        if (!form.dataAdmissao) tempErrors.dataAdmissao = "Data de Admissão é obrigatória";
+        //if (!form.dataAdmissao) tempErrors.dataAdmissao = "Data de Admissão é obrigatória";
         if (!form.setor) tempErrors.setor = "Setor é obrigatório";
         if (!form.salario) tempErrors.salario = "Salário é obrigatório";
 
@@ -155,9 +175,9 @@ const CadastrarFuncionarios = () => {
         setOpenDialog(false);
         navigate('/editar-funcionario', {
             state: {
-              idFuncionario: idFuncionario,
+                idFuncionario: idFuncionario,
             }
-          });
+        });
     };
 
     const handleCadastrarOutro = () => {
@@ -167,9 +187,9 @@ const CadastrarFuncionarios = () => {
             sexo: '',
             endereco: '',
             telefone: '',
-            dataAniversario: '',
+            dataAniversario: null,
             cargo: '',
-            dataAdmissao: '',
+            dataAdmissao: null,
             setor: '',
             salario: '',
             fotoPerfil: '',
@@ -287,17 +307,19 @@ const CadastrarFuncionarios = () => {
                                 />
                             </Grid2>
                             <Grid2 size={{ xs: 12, sm: 6 }}>
-                                <TextField
-                                    label="Data de Aniversário"
-                                    name="dataAniversario"
-                                    fullWidth
-                                    type="date"
-                                    InputLabelProps={{ shrink: true }}
-                                    value={form.dataAniversario}
-                                    onChange={handleInputChange}
-                                    error={!!errors.dataAniversario}
-                                    helperText={errors.dataAniversario}
-                                />
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker
+                                        label="Data de Aniversário"
+                                        value={form.dataAniversario}
+                                        onChange={(newValue: Dayjs | null) =>
+                                            setForm({
+                                                ...form,
+                                                dataAniversario: newValue
+                                            })
+                                        }
+                                        format='DD/MM/YYYY'
+                                    />
+                                </LocalizationProvider>
                             </Grid2>
                         </Grid2>
 
@@ -320,17 +342,19 @@ const CadastrarFuncionarios = () => {
                                 />
                             </Grid2>
                             <Grid2 size={{ xs: 12, sm: 6 }}>
-                                <TextField
-                                    label="Data de Admissão"
-                                    name="dataAdmissao"
-                                    fullWidth
-                                    type="date"
-                                    InputLabelProps={{ shrink: true }}
-                                    value={form.dataAdmissao}
-                                    onChange={handleInputChange}
-                                    error={!!errors.dataAdmissao}
-                                    helperText={errors.dataAdmissao}
-                                />
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <DatePicker
+                                        label="Data de Admissão"
+                                        value={form.dataAdmissao}
+                                        onChange={(newValue: Dayjs | null) =>
+                                            setForm({
+                                                ...form,
+                                                dataAdmissao: newValue
+                                            })
+                                        }
+                                        format='DD/MM/YYYY'
+                                    />
+                                </LocalizationProvider>
                             </Grid2>
                             <Grid2 size={{ xs: 12 }}>
                                 <TextField

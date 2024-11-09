@@ -30,6 +30,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { Funcionario } from '../../types/Funcionario';
 import { HistoricoItem } from '../../types/HistoricoItem';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import dayjs, { Dayjs } from 'dayjs';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -42,9 +45,9 @@ const EditarFuncionario = () => {
         sexo: '',
         endereco: '',
         telefone: '',
-        dataAniversario: '',
+        dataAniversario: dayjs(),
         cargo: '',
-        dataAdmissao: '',
+        dataAdmissao: dayjs(),
         setor: '',
         salario: '',
         fotoPerfil: '',
@@ -65,6 +68,14 @@ const EditarFuncionario = () => {
     const location = useLocation();
     const { idFuncionario }: { idFuncionario: string } = location.state || {};
 
+    const formatarDatas = (data: any) => {
+        const dadosFormatados = {...data};
+    
+        dadosFormatados.dataAniversario = dayjs(data.dataAniversario);
+        dadosFormatados.dataAdmissao = dayjs(data.dataAdmissao);
+        return dadosFormatados;
+    }
+
     const detalharFuncionario = async () => {
         const auth = getAuth();
         const token = await auth.currentUser?.getIdToken();
@@ -77,7 +88,8 @@ const EditarFuncionario = () => {
                 }
             });
             const data = await response.json();
-            setForm(data);
+            const dadosFormatados = formatarDatas(data);
+            setForm(dadosFormatados);
             setHistorico(data.historico);
         } catch (error) {
             console.error('Erro ao buscar funcionário:', error);
@@ -143,8 +155,13 @@ const EditarFuncionario = () => {
     const handleSubmit = async () => {
         if (validateForm()) {
             try {
+                const formDataWithDate = {
+                    ...form,
+                    dataAdmissao: form.dataAdmissao ? dayjs(form.dataAdmissao) : null,
+                    dataAniversario: form.dataAniversario ? dayjs(form.dataAniversario) : null
+                };
                 const url = await handleUploadFoto();
-                await editarFuncionario(idFuncionario, form, url ?? undefined);
+                await editarFuncionario(idFuncionario, formDataWithDate, url ?? undefined);
                 setOpenSnackbar({ open: true, message: "Funcionário editado com sucesso!", severity: "success" });
                 setOpenDialog(true);
             } catch (error) {
@@ -168,24 +185,23 @@ const EditarFuncionario = () => {
             const uniqueFileName = generateUniqueFileName(idFuncionario);
             const fotoRef = ref(storage, uniqueFileName);
             await uploadBytes(fotoRef, fotoPerfil);
-            return await getDownloadURL(fotoRef); 
+            return await getDownloadURL(fotoRef);
         }
         return null;
     };
 
-    const validateForm = (): boolean => {
-        let valid = true;
-        let newErrors: Partial<Funcionario> = {};
+    const validateForm = () => {
+        let tempErrors: Partial<Funcionario> = {};
+        if (!form.nome) tempErrors.nome = "Nome é obrigatório";
+        if (!form.sexo) tempErrors.sexo = "Sexo é obrigatório";
+        if (!form.endereco) tempErrors.endereco = "Endereço é obrigatório";
+        if (!form.telefone) tempErrors.telefone = "Telefone é obrigatório e deve ser válido (ex. 11987654321)";
+        if (!form.cargo) tempErrors.cargo = "Cargo é obrigatório";
+        if (!form.setor) tempErrors.setor = "Setor é obrigatório";
+        if (!form.salario) tempErrors.salario = "Salário é obrigatório";
 
-        for (let key in form) {
-            if (typeof form[key as keyof Funcionario] === 'string' && form[key as keyof Funcionario] === '') {
-                newErrors[key as keyof Funcionario] = 'Campo obrigatório';
-                valid = false;
-            }
-        }
-
-        setErrors(newErrors);
-        return valid;
+        setErrors(tempErrors);
+        return Object.keys(tempErrors).length === 0;
     };
 
     const handleToggleExpand = (index: number) => {
@@ -252,7 +268,7 @@ const EditarFuncionario = () => {
                 <Dialog open={historicoDialogOpen} onClose={() => setHistoricoDialogOpen(false)} maxWidth="md" fullWidth>
                     <DialogTitle>Histórico de Alterações</DialogTitle>
                     <DialogContent dividers>
-                        {sortedHistorico.map((item, index) => (
+                        {sortedHistorico.length > 0 ? sortedHistorico.map((item, index) => (
                             <Box key={index} mb={2}>
                                 <ListItemButton onClick={() => handleToggleExpand(index)}>
                                     <ListItemText
@@ -292,7 +308,11 @@ const EditarFuncionario = () => {
                                     ))}
                                 </Collapse>
                             </Box>
-                        ))}
+                        )
+                    ): 
+                    <Box>
+                        <DialogTitle>Este funcionário ainda não teve nenhuma alteração.</DialogTitle>
+                    </Box>}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => setHistoricoDialogOpen(false)} color="primary">Fechar</Button>
@@ -384,21 +404,19 @@ const EditarFuncionario = () => {
                                 helperText={errors.telefone}
                             />
                         </Grid2>
-                        <Grid2 size={{ xs: 12, sm: 6 }}>
-                            <TextField
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
                                 label="Data de Aniversário"
-                                fullWidth
-                                type="date"
                                 value={form.dataAniversario}
-                                onChange={handleInputChange}
-                                name="dataAniversario"
-                                error={Boolean(errors.dataAniversario)}
-                                helperText={errors.dataAniversario}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
+                                onChange={(newValue: Dayjs | null) =>
+                                    setForm({
+                                        ...form,
+                                        dataAniversario: newValue
+                                    })
+                                }
+                                format='DD/MM/YYYY'
                             />
-                        </Grid2>
+                        </LocalizationProvider>
                     </Grid2>
 
                     <Divider sx={{ my: 3 }} />
@@ -419,21 +437,19 @@ const EditarFuncionario = () => {
                                 helperText={errors.cargo}
                             />
                         </Grid2>
-                        <Grid2 size={{ xs: 12, sm: 6 }}>
-                            <TextField
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
                                 label="Data de Admissão"
-                                fullWidth
-                                type="date"
                                 value={form.dataAdmissao}
-                                onChange={handleInputChange}
-                                name="dataAdmissao"
-                                error={Boolean(errors.dataAdmissao)}
-                                helperText={errors.dataAdmissao}
-                                InputLabelProps={{
-                                    shrink: true,
-                                }}
+                                onChange={(newValue: Dayjs | null) =>
+                                    setForm({
+                                        ...form,
+                                        dataAdmissao: newValue
+                                    })
+                                }
+                                format='DD/MM/YYYY'
                             />
-                        </Grid2>
+                        </LocalizationProvider>
                         <Grid2 size={{ xs: 12 }}>
                             <TextField
                                 label="Setor"
