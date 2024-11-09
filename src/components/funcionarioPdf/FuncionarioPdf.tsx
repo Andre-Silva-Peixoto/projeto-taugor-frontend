@@ -99,7 +99,6 @@ const FuncionarioPdf: React.FC<FuncionarioPdfProps> = ({ funcionario }) => {
         const { width, height } = page.getSize();
         const fontSize = 12;
 
-        // Title
         page.drawText('Currículo Profissional', {
             x: 50,
             y: height - 50,
@@ -107,7 +106,6 @@ const FuncionarioPdf: React.FC<FuncionarioPdfProps> = ({ funcionario }) => {
             color: rgb(0, 0, 0.8),
         });
 
-        // Profile Information (Nome, Foto)
         const headerY = height - 100;
         page.drawText(funcionario.nome, {
             x: 50,
@@ -116,24 +114,28 @@ const FuncionarioPdf: React.FC<FuncionarioPdfProps> = ({ funcionario }) => {
             color: rgb(0, 0, 0),
         });
 
-        // If there's a profile picture, display it
         if (funcionario.fotoPerfil) {
             try {
                 const base64Image = await fetchImageAsBase64(funcionario.fotoPerfil);
                 const image = await pdfDoc.embedPng(base64Image.split(',')[1]);
-                const imageDims = image.scale(0.2);
+        
+                const maxWidth = 150;
+                const maxHeight = 150;
+        
+                const imageDims = image.scale(1);
+                const scale = Math.min(maxWidth / imageDims.width, maxHeight / imageDims.height);
+        
                 page.drawImage(image, {
-                    x: width - imageDims.width - 50,
-                    y: headerY - imageDims.height / 2,
-                    width: imageDims.width,
-                    height: imageDims.height,
+                    x: width - (imageDims.width * scale) - 50,
+                    y: headerY - (imageDims.height * scale) / 2,
+                    width: imageDims.width * scale,
+                    height: imageDims.height * scale,
                 });
             } catch (error) {
                 console.error('Erro ao carregar a foto de perfil:', error);
             }
         }
 
-        // Personal Details Section
         page.drawText(`Sexo: ${funcionario.sexo}`, { x: 50, y: headerY - 40, size: fontSize });
         page.drawText(`Endereço: ${funcionario.endereco}`, { x: 50, y: headerY - 60, size: fontSize });
         page.drawText(`Telefone: ${funcionario.telefone}`, { x: 50, y: headerY - 80, size: fontSize });
@@ -143,7 +145,6 @@ const FuncionarioPdf: React.FC<FuncionarioPdfProps> = ({ funcionario }) => {
             size: fontSize
         });
 
-        // Professional Details Section
         const sectionY = headerY - 150;
         page.drawText('Informações Profissionais', {
             x: 50,
@@ -161,7 +162,6 @@ const FuncionarioPdf: React.FC<FuncionarioPdfProps> = ({ funcionario }) => {
         page.drawText(`Setor: ${funcionario.setor}`, { x: 50, y: sectionY - 60, size: fontSize });
         page.drawText(`Salário: R$ ${funcionario.salario}`, { x: 50, y: sectionY - 80, size: fontSize });
 
-        // PDF Footer (Optional)
         page.drawText('© 2024 Currículo Gerado', {
             x: width - 150,
             y: 30,

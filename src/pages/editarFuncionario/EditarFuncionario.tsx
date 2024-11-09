@@ -177,7 +177,9 @@ const EditarFuncionario = () => {
         }));
     }
     const handleSubmit = async () => {
-        if (funcionarioInicial !== form) {
+        if (funcionarioInicial === form && !fotoPerfil) {
+            setOpenSnackbar({ open: true, message: "Nenhuma alteração foi feita.", severity: "info" });
+        }else{
             if (validateForm()) {
                 try {
                     const formDataWithDate = {
@@ -195,8 +197,6 @@ const EditarFuncionario = () => {
             } else {
                 setOpenSnackbar({ open: true, message: "Por favor, preencha todos os campos obrigatórios.", severity: "error" });
             }
-        } else {
-            setOpenSnackbar({ open: true, message: "Nenhuma alteração foi feita.", severity: "info" });
         }
     };
 
@@ -261,10 +261,40 @@ const EditarFuncionario = () => {
         setExpandIndex(0);
     }, []);
 
-    const handleFotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
-            setFotoPerfil(e.target.files[0]);
-            setFotoUrl(URL.createObjectURL(e.target.files[0]));
+            const file = e.target.files[0];
+    
+            const image = new Image();
+            image.src = URL.createObjectURL(file);
+    
+            image.onload = () => {
+                const canvas = document.createElement("canvas");
+                canvas.width = image.width;
+                canvas.height = image.height;
+    
+                const context = canvas.getContext("2d");
+                if (context) {
+                    context.drawImage(image, 0, 0);
+    
+                    canvas.toBlob((blob) => {
+                        if (blob) {
+                            const pngFile = new File([blob], "fotoPerfil.png", { type: "image/png" });
+    
+                            setFotoPerfil(pngFile);
+                            const pngUrl = URL.createObjectURL(pngFile);
+                            setFotoUrl(pngUrl);
+    
+                            setForm((prevForm) => ({
+                                ...prevForm,
+                                fotoPerfil: pngUrl,
+                            }));
+    
+                            URL.revokeObjectURL(image.src);
+                        }
+                    }, "image/png");
+                }
+            };
         }
     };
 
