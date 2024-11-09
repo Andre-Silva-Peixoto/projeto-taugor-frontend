@@ -1,46 +1,63 @@
-# Getting Started with Create React App
+# Projeto Taugor - Gestão de Documentos de Funcionários
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Este projeto é uma aplicação de gestão de documentos de funcionários, desenvolvida como parte de um teste avaliativo. O sistema foi construído com React JS e utiliza o Firebase para gerenciar autenticação, banco de dados e armazenamento de arquivos.
 
-## Available Scripts
+## Desenvolvedor
 
-In the project directory, you can run:
+- **André Silva Peixoto**
 
-### `npm start`
+## Tecnologias Utilizadas
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **Front-end:** React JS, Material UI (usando um componente), TypeScript
+- **Back-end:** Firebase Functions (em vez de um servidor Node.js tradicional)
+- **Banco de Dados:** Firebase Firestore
+- **Armazenamento de Arquivos:** Firebase Storage
+- **Autenticação:** Firebase Authentication
+- **Manipulação de PDFs:** `pdf-lib`
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Funcionalidades
 
-### `npm test`
+1. **Cadastro de Funcionários:** Possibilidade de cadastrar novos funcionários com informações como nome, sexo, endereço, telefone, data de nascimento, cargo, data de admissão, setor, salário, e foto de perfil.
+2. **Atualização e Exclusão:** Permite a atualização de dados dos funcionários cadastrados, bem como sua exclusão.
+3. **Histórico de Alterações:** Registra o histórico de alterações dos documentos dos funcionários.
+4. **Visualização de Documentos PDF:** Geração e visualização de perfis de funcionários em formato PDF.
+5. **Paginação de Resultados:** Lista de funcionários com paginação, permitindo ao usuário definir quantos funcionários deseja ver por página.
+6. **Validação de Campos:** Implementação de validações para garantir que os dados sejam cadastrados corretamente.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Pré-requisitos
 
-### `npm run build`
+- Node.js
+- Firebase CLI (caso queira realizar o deploy)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Instalação e Configuração
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/Andre-Silva-Peixoto/projeto-taugor-frontend.git
+   ```
+2. Navegue até a pasta do projeto:
+   ```bash
+   cd projeto-taugor-frontend
+   ```
+3. Instale as dependências:
+   ```bash
+   npm install
+   ```
+4. Crie um arquivo `.env` com as variáveis de ambiente necessárias para o Firebase.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Scripts Disponíveis
 
-### `npm run eject`
+- **`npm start`**: Inicia a aplicação em modo de desenvolvimento.
+- **`npm run build`**: Compila o aplicativo para produção.
+- **`firebase deploy`**: Publica o projeto no Firebase (caso configurado).
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Estrutura do Projeto
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **`src/components`**: Componentes reutilizáveis, como `funcionarioPdf`, etc.
+- **`src/pages`**: Páginas principais da aplicação.
+- **`src/styles`**: Estilos globais e arquivos de estilos específicos.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Observações
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Este projeto foi desenvolvido por **André Silva Peixoto** como parte de um teste avaliativo, e representa uma solução eficiente e escalável para a gestão de documentos e perfis de funcionários em ambiente corporativo.
