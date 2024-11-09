@@ -33,6 +33,7 @@ import { HistoricoItem } from '../../types/HistoricoItem';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import FuncionarioPdf from '../../components/funcionarioPdf/FuncionarioPdf';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -69,8 +70,8 @@ const EditarFuncionario = () => {
     const { idFuncionario }: { idFuncionario: string } = location.state || {};
 
     const formatarDatas = (data: any) => {
-        const dadosFormatados = {...data};
-    
+        const dadosFormatados = { ...data };
+
         dadosFormatados.dataAniversario = dayjs(data.dataAniversario);
         dadosFormatados.dataAdmissao = dayjs(data.dataAdmissao);
         return dadosFormatados;
@@ -243,7 +244,7 @@ const EditarFuncionario = () => {
     };
 
     return (
-        <>
+        <div style={{ display: 'flex' }}>
             <Container maxWidth="lg" sx={{ mt: 4 }}>
                 <Snackbar open={openSnackbar.open} autoHideDuration={6000} onClose={handleSnackbarClose}>
                     <Alert onClose={handleSnackbarClose} severity={openSnackbar.severity} sx={{ width: '100%' }}>
@@ -309,10 +310,10 @@ const EditarFuncionario = () => {
                                 </Collapse>
                             </Box>
                         )
-                    ): 
-                    <Box>
-                        <DialogTitle>Este funcionário ainda não teve nenhuma alteração.</DialogTitle>
-                    </Box>}
+                        ) :
+                            <Box>
+                                <DialogTitle>Este funcionário ainda não teve nenhuma alteração.</DialogTitle>
+                            </Box>}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => setHistoricoDialogOpen(false)} color="primary">Fechar</Button>
@@ -369,6 +370,7 @@ const EditarFuncionario = () => {
                                 name="nome"
                                 error={Boolean(errors.nome)}
                                 helperText={errors.nome}
+                                
                             />
                         </Grid2>
                         <Grid2 size={{ xs: 12, sm: 6 }}>
@@ -481,7 +483,10 @@ const EditarFuncionario = () => {
                     </Box>
                 </Paper>
             </Container>
-        </>
+            <Container sx={{ mt: 4 }}>
+                <FuncionarioPdf funcionario={form}></FuncionarioPdf>
+            </Container>
+        </div>
     );
 };
 
