@@ -25,6 +25,7 @@ import { useNavigate } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 import { Funcionario } from '../../types/Funcionario';
 import { generateFuncionarioPDF } from '../../components/funcionarioPdf/FuncionarioPdf';
+import dayjs from 'dayjs';
 
 const ListagemFuncionarios = () => {
     const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
@@ -97,12 +98,36 @@ const ListagemFuncionarios = () => {
         setPage(0);
     };
 
+    const formatarDatas = (data: any) => {
+        const dadosFormatados = { ...data };
+
+        dadosFormatados.dataAniversario = dayjs(data.dataAniversario);
+        dadosFormatados.dataAdmissao = dayjs(data.dataAdmissao);
+        return dadosFormatados;
+    }
+
     const handleDownloadPdf = async (funcionario: Funcionario) => {
-        const pdfBlob = await generateFuncionarioPDF(funcionario);
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(pdfBlob);
-        link.download = `${funcionario.nome}-Curriculo.pdf`;
-        link.click();
+
+        const auth = getAuth();
+        const token = await auth.currentUser?.getIdToken();
+
+        try {
+            const response = await fetch(`${apiUrl}/detalhar-funcionario/${funcionario.id}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            const data = await response.json();
+            const dadosFormatados = formatarDatas(data);
+            const pdfBlob = await generateFuncionarioPDF(dadosFormatados);
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(pdfBlob);
+            link.download = `${funcionario.nome}-Curriculo.pdf`;
+            link.click();
+        } catch (error) {
+            console.error('Erro ao baixar curriculo de funcionário:', error);
+        }
     };
 
     return (

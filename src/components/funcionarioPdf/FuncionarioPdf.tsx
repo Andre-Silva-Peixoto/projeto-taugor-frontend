@@ -12,6 +12,17 @@ export const generateFuncionarioPDF = async (funcionario: Funcionario) => {
     const { width, height } = page.getSize();
     const fontSize = 12;
 
+    const fetchImageAsBase64 = async (url: string) => {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    };
+    
     // Título
     page.drawText('Currículo Profissional', {
         x: 50,
@@ -32,21 +43,20 @@ export const generateFuncionarioPDF = async (funcionario: Funcionario) => {
     // Foto do perfil
     if (funcionario.fotoPerfil) {
         try {
-            const response = await fetch(funcionario.fotoPerfil);
-            const blob = await response.blob();
-            const base64Image = await new Promise<string>((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result as string);
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
-            });
+            const base64Image = await fetchImageAsBase64(funcionario.fotoPerfil);
             const image = await pdfDoc.embedPng(base64Image.split(',')[1]);
-            const imageDims = image.scale(0.2);
+    
+            const maxWidth = 150;
+            const maxHeight = 150;
+    
+            const imageDims = image.scale(1);
+            const scale = Math.min(maxWidth / imageDims.width, maxHeight / imageDims.height);
+    
             page.drawImage(image, {
-                x: width - imageDims.width - 50,
-                y: headerY - imageDims.height / 2,
-                width: imageDims.width,
-                height: imageDims.height,
+                x: width - (imageDims.width * scale) - 50,
+                y: headerY - (imageDims.height * scale) / 2,
+                width: imageDims.width * scale,
+                height: imageDims.height * scale,
             });
         } catch (error) {
             console.error('Erro ao carregar a foto de perfil:', error);
