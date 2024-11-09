@@ -19,9 +19,30 @@ const TextFieldDebounced: React.FC<Props> = ({
 
   useEffect(() => {
     setInnerValue(typeof value === 'string' ? value : "");
-}, [value]);
+  }, [value]);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    let newValue = event.target.value;
+
+    // Formatação para o campo 'salario' (somente números)
+    if (name === 'salario') {
+      newValue = newValue.replace(/\D/g, '');
+    }
+
+    // Formatação para o campo 'telefone'
+    else if (name === 'telefone') {
+      const onlyNumbers = newValue.replace(/\D/g, '');
+      newValue = onlyNumbers
+        .slice(0, 11)
+        .replace(/^(\d{2})(\d)/g, '($1) $2')
+        .replace(/(\d{5})(\d)/, '$1-$2');
+    }
+
+    setInnerValue(newValue);
+    onChange(newValue); 
+    debouncedChangeHandler(newValue);
+  };
+
   const debouncedChangeHandler = useCallback(
     debounce((newValue: string) => {
       if (name) {
@@ -30,14 +51,6 @@ const TextFieldDebounced: React.FC<Props> = ({
     }, debounceMs),
     [changeForm, debounceMs, name]
   );
-
-  // Função de alteração do valor
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const newValue = event.target.value;
-    setInnerValue(newValue);
-    onChange(newValue); 
-    debouncedChangeHandler(newValue);
-  };
 
   return <TextField value={innerValue} onChange={handleChange} {...props} />;
 };

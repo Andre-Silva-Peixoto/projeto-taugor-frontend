@@ -245,6 +245,10 @@ const EditarFuncionario = () => {
         return word.charAt(0).toUpperCase() + word.slice(1);
     };
 
+    const formatarDataHistorico = (data: Date | any): string => {
+        return dayjs(data).format("DD/MM/YYYY");
+    };
+
     return (
         <div style={{ display: 'flex' }}>
             <Container maxWidth="lg" sx={{ mt: 4 }}>
@@ -284,7 +288,7 @@ const EditarFuncionario = () => {
                                     {item.alteracoes.map((alteracao, idx) => (
                                         <Box key={idx} sx={{ pl: 2, py: 1, borderBottom: '1px solid #ddd' }}>
                                             <Typography variant="body2">
-                                                <strong>{formatFieldName(alteracao.campo)} Antigo:</strong>
+                                                <strong>{formatFieldName(alteracao.campo)} Antigo: </strong>
                                                 {alteracao.campo === 'fotoPerfil' ? (
                                                     <Avatar
                                                         alt="Foto de perfil antiga"
@@ -292,11 +296,11 @@ const EditarFuncionario = () => {
                                                         sx={{ width: 56, height: 56 }}
                                                     />
                                                 ) : (
-                                                    alteracao.valorAntigo
+                                                    alteracao.campo === 'dataAniversario' || alteracao.campo === 'dataAdmissao' ? formatarDataHistorico(alteracao.valorAntigo) : alteracao.valorAntigo
                                                 )}
                                             </Typography>
                                             <Typography variant="body2">
-                                                <strong>{formatFieldName(alteracao.campo)} Novo:</strong>
+                                                <strong>{formatFieldName(alteracao.campo)} Novo: </strong>
                                                 {alteracao.campo === 'fotoPerfil' ? (
                                                     <Avatar
                                                         alt="Foto de perfil nova"
@@ -304,7 +308,7 @@ const EditarFuncionario = () => {
                                                         sx={{ width: 56, height: 56 }}
                                                     />
                                                 ) : (
-                                                    alteracao.valorNovo
+                                                    alteracao.campo === 'dataAniversario' || alteracao.campo === 'dataAdmissao' ? formatarDataHistorico(alteracao.valorNovo) : alteracao.valorNovo
                                                 )}
                                             </Typography>
                                         </Box>
