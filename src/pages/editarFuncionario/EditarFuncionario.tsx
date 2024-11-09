@@ -34,6 +34,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import dayjs, { Dayjs } from 'dayjs';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import FuncionarioPdf from '../../components/funcionarioPdf/FuncionarioPdf';
+import TextFieldDebounced from '../../components/textFieldDebounced/TextFieldDebounced';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -149,10 +150,12 @@ const EditarFuncionario = () => {
         setOpenSnackbar({ open: false, message: "", severity: "success" });
     };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    };
-
+    function atualizarFormulario(campo: string, valor: string) {
+        setForm((prevForm) => ({
+            ...prevForm,
+            [campo]: valor,
+        }));
+    }
     const handleSubmit = async () => {
         if (validateForm()) {
             try {
@@ -362,45 +365,49 @@ const EditarFuncionario = () => {
                     </Typography>
                     <Grid2 container spacing={2}>
                         <Grid2 size={{ xs: 12, sm: 6 }}>
-                            <TextField
+                            <TextFieldDebounced
                                 label="Nome"
                                 fullWidth
                                 value={form.nome}
-                                onChange={handleInputChange}
+                                onChange={(v) => v}
+                                changeForm={atualizarFormulario}
                                 name="nome"
                                 error={Boolean(errors.nome)}
                                 helperText={errors.nome}
-                                
+
                             />
                         </Grid2>
                         <Grid2 size={{ xs: 12, sm: 6 }}>
-                            <TextField
+                            <TextFieldDebounced
                                 label="Sexo"
                                 fullWidth
                                 value={form.sexo}
-                                onChange={handleInputChange}
+                                onChange={(v) => v}
+                                changeForm={atualizarFormulario}
                                 name="sexo"
                                 error={Boolean(errors.sexo)}
                                 helperText={errors.sexo}
                             />
                         </Grid2>
                         <Grid2 size={{ xs: 12 }}>
-                            <TextField
+                            <TextFieldDebounced
                                 label="Endereço"
                                 fullWidth
                                 value={form.endereco}
-                                onChange={handleInputChange}
+                                onChange={(v) => v}
+                                changeForm={atualizarFormulario}
                                 name="endereco"
                                 error={Boolean(errors.endereco)}
                                 helperText={errors.endereco}
                             />
                         </Grid2>
                         <Grid2 size={{ xs: 12, sm: 6 }}>
-                            <TextField
+                            <TextFieldDebounced
                                 label="Telefone"
                                 fullWidth
                                 value={form.telefone}
-                                onChange={handleInputChange}
+                                onChange={(v) => v}
+                                changeForm={atualizarFormulario}
                                 name="telefone"
                                 error={Boolean(errors.telefone)}
                                 helperText={errors.telefone}
@@ -429,11 +436,12 @@ const EditarFuncionario = () => {
 
                     <Grid2 container spacing={2} columns={12}>
                         <Grid2 size={{ xs: 12, sm: 6 }}>
-                            <TextField
+                            <TextFieldDebounced
                                 label="Cargo"
                                 fullWidth
                                 value={form.cargo}
-                                onChange={handleInputChange}
+                                onChange={(v) => v}
+                                changeForm={atualizarFormulario}
                                 name="cargo"
                                 error={Boolean(errors.cargo)}
                                 helperText={errors.cargo}
@@ -453,22 +461,25 @@ const EditarFuncionario = () => {
                             />
                         </LocalizationProvider>
                         <Grid2 size={{ xs: 12 }}>
-                            <TextField
+                            <TextFieldDebounced
                                 label="Setor"
                                 fullWidth
                                 value={form.setor}
-                                onChange={handleInputChange}
+                                onChange={(v) => v}
+                                changeForm={atualizarFormulario}
                                 name="setor"
                                 error={Boolean(errors.setor)}
                                 helperText={errors.setor}
                             />
                         </Grid2>
                         <Grid2 size={{ xs: 12 }}>
-                            <TextField
+                            <TextFieldDebounced
                                 label="Salário"
                                 fullWidth
                                 value={form.salario}
-                                onChange={handleInputChange}
+                                debounceMs={300}
+                                changeForm={atualizarFormulario}
+                                onChange={(v) => v}
                                 name="salario"
                                 error={Boolean(errors.salario)}
                                 helperText={errors.salario}
