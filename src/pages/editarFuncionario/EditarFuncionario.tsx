@@ -54,6 +54,20 @@ const EditarFuncionario = () => {
         fotoPerfil: '',
         historico: []
     });
+    const [funcionarioInicial, setFuncionarioInicial] = useState<Funcionario>({
+        id: '',
+        nome: '',
+        sexo: '',
+        endereco: '',
+        telefone: '',
+        dataAniversario: dayjs(),
+        cargo: '',
+        dataAdmissao: dayjs(),
+        setor: '',
+        salario: '',
+        fotoPerfil: '',
+        historico: []
+    });
     const [historico, setHistorico] = useState<HistoricoItem[]>([]);
     const [errors, setErrors] = useState<Partial<Funcionario>>({});
     const [openSnackbar, setOpenSnackbar] = useState<{ open: boolean; message: string; severity: AlertColor }>({
@@ -91,6 +105,7 @@ const EditarFuncionario = () => {
             const data = await response.json();
             const dadosFormatados = formatarDatas(data);
             setForm(dadosFormatados);
+            setFuncionarioInicial(dadosFormatados);
             setHistorico(data.historico);
         } catch (error) {
             console.error('Erro ao buscar funcionário:', error);
@@ -156,22 +171,26 @@ const EditarFuncionario = () => {
         }));
     }
     const handleSubmit = async () => {
-        if (validateForm()) {
-            try {
-                const formDataWithDate = {
-                    ...form,
-                    dataAdmissao: form.dataAdmissao ? dayjs(form.dataAdmissao) : null,
-                    dataAniversario: form.dataAniversario ? dayjs(form.dataAniversario) : null
-                };
-                const url = await handleUploadFoto();
-                await editarFuncionario(idFuncionario, formDataWithDate, url ?? undefined);
-                setOpenSnackbar({ open: true, message: "Funcionário editado com sucesso!", severity: "success" });
-                setOpenDialog(true);
-            } catch (error) {
-                setOpenSnackbar({ open: true, message: "Erro ao editar funcionário.", severity: "error" });
+        if (funcionarioInicial !== form) {
+            if (validateForm()) {
+                try {
+                    const formDataWithDate = {
+                        ...form,
+                        dataAdmissao: form.dataAdmissao ? dayjs(form.dataAdmissao) : null,
+                        dataAniversario: form.dataAniversario ? dayjs(form.dataAniversario) : null
+                    };
+                    const url = await handleUploadFoto();
+                    await editarFuncionario(idFuncionario, formDataWithDate, url ?? undefined);
+                    setOpenSnackbar({ open: true, message: "Funcionário editado com sucesso!", severity: "success" });
+                    setOpenDialog(true);
+                } catch (error) {
+                    setOpenSnackbar({ open: true, message: "Erro ao editar funcionário.", severity: "error" });
+                }
+            } else {
+                setOpenSnackbar({ open: true, message: "Por favor, preencha todos os campos obrigatórios.", severity: "error" });
             }
-        } else {
-            setOpenSnackbar({ open: true, message: "Por favor, preencha todos os campos obrigatórios.", severity: "error" });
+        }else{
+            setOpenSnackbar({ open: true, message: "Nenhuma alteração foi feita.", severity: "info" });
         }
     };
 
