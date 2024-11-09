@@ -124,12 +124,12 @@ const CadastrarFuncionarios = () => {
 
     const validateForm = () => {
         let tempErrors: Partial<Funcionario> = {};
-        
+
         if (!form.nome) tempErrors.nome = "Nome é obrigatório";
         if (!form.sexo) tempErrors.sexo = "Sexo é obrigatório";
         if (!form.endereco) tempErrors.endereco = "Endereço é obrigatório";
         if (!form.telefone) tempErrors.telefone = "Telefone é obrigatório e deve ser válido (ex. 11987654321)";
-    
+
         // Validação de data de aniversário
         if (!form.dataAniversario) {
             setErrorDataAniversario(true);
@@ -138,7 +138,7 @@ const CadastrarFuncionarios = () => {
             setErrorDataAniversario(false);
             setHelperTextDataAniversario("");
         }
-    
+
         // Validação de data de admissão
         if (!form.dataAdmissao) {
             setErrorDataAdmissao(true);
@@ -147,25 +147,65 @@ const CadastrarFuncionarios = () => {
             setErrorDataAdmissao(false);
             setHelperTextDataAdmissao("");
         }
-    
+
         if (!form.cargo) tempErrors.cargo = "Cargo é obrigatório";
         if (!form.setor) tempErrors.setor = "Setor é obrigatório";
         if (!form.salario) tempErrors.salario = "Salário é obrigatório";
-    
+
         setErrors(tempErrors);
-    
+
         const hasDateErrors = !form.dataAniversario || !form.dataAdmissao;
         return Object.keys(tempErrors).length === 0 && !hasDateErrors;
     };
 
+    const convertToPng = async (file: File): Promise<File> => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const img = new Image();
+                img.src = reader.result as string;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) return reject("Canvas context not found");
+
+                    ctx.drawImage(img, 0, 0);
+                    canvas.toBlob(
+                        (blob) => {
+                            if (blob) {
+                                const pngFile = new File([blob], `${file.name.split('.')[0]}.png`, { type: 'image/png' });
+                                resolve(pngFile);
+                            } else {
+                                reject("Conversion to PNG failed");
+                            }
+                        },
+                        'image/png',
+                        1
+                    );
+                };
+            };
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(file);
+        });
+    };
+
     const handleUploadFoto = async () => {
         if (fotoPerfil) {
-            const storage = getStorage();
-            const fotoRef = ref(storage, `fotoPerfil/${fotoPerfil.name}`);
-            await uploadBytes(fotoRef, fotoPerfil);
-            const url = await getDownloadURL(fotoRef);
-            setFotoUrl(url);
-            return url;
+            try {
+                const pngFotoPerfil = await convertToPng(fotoPerfil);
+                const storage = getStorage();
+                const fotoRef = ref(storage, `fotoPerfil/${pngFotoPerfil.name}`);
+                await uploadBytes(fotoRef, pngFotoPerfil);
+                const url = await getDownloadURL(fotoRef);
+                setFotoUrl(url);
+                return url;
+            } catch (error) {
+                console.error("Erro ao converter a imagem para PNG:", error);
+                setOpenSnackbar({ open: true, message: "Erro ao converter a imagem.", severity: "error" });
+                return null;
+            }
         }
         return null;
     };
