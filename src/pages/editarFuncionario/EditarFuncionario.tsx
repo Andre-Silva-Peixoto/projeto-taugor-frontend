@@ -68,6 +68,12 @@ const EditarFuncionario = () => {
         fotoPerfil: '',
         historico: []
     });
+    const [errorDataAdmissao, setErrorDataAdmissao] = useState(false);
+    const [helperTextDataAdmissao, setHelperTextDataAdmissao] = useState('');
+
+    const [errorDataAniversario, setErrorDataAniversario] = useState(false);
+    const [helperTextDataAniversario, setHelperTextDataAniversario] = useState('');
+
     const [historico, setHistorico] = useState<HistoricoItem[]>([]);
     const [errors, setErrors] = useState<Partial<Funcionario>>({});
     const [openSnackbar, setOpenSnackbar] = useState<{ open: boolean; message: string; severity: AlertColor }>({
@@ -189,7 +195,7 @@ const EditarFuncionario = () => {
             } else {
                 setOpenSnackbar({ open: true, message: "Por favor, preencha todos os campos obrigatórios.", severity: "error" });
             }
-        }else{
+        } else {
             setOpenSnackbar({ open: true, message: "Nenhuma alteração foi feita.", severity: "info" });
         }
     };
@@ -214,16 +220,36 @@ const EditarFuncionario = () => {
 
     const validateForm = () => {
         let tempErrors: Partial<Funcionario> = {};
+        
         if (!form.nome) tempErrors.nome = "Nome é obrigatório";
         if (!form.sexo) tempErrors.sexo = "Sexo é obrigatório";
         if (!form.endereco) tempErrors.endereco = "Endereço é obrigatório";
         if (!form.telefone) tempErrors.telefone = "Telefone é obrigatório e deve ser válido (ex. 11987654321)";
+    
+        if (!form.dataAniversario) {
+            setErrorDataAniversario(true);
+            setHelperTextDataAniversario("Data de aniversário é obrigatória");
+        } else {
+            setErrorDataAniversario(false);
+            setHelperTextDataAniversario("");
+        }
+    
+        if (!form.dataAdmissao) {
+            setErrorDataAdmissao(true);
+            setHelperTextDataAdmissao("Data de Admissão é obrigatória");
+        } else {
+            setErrorDataAdmissao(false);
+            setHelperTextDataAdmissao("");
+        }
+    
         if (!form.cargo) tempErrors.cargo = "Cargo é obrigatório";
         if (!form.setor) tempErrors.setor = "Setor é obrigatório";
         if (!form.salario) tempErrors.salario = "Salário é obrigatório";
-
+    
         setErrors(tempErrors);
-        return Object.keys(tempErrors).length === 0;
+    
+        const hasDateErrors = !form.dataAniversario || !form.dataAdmissao;
+        return Object.keys(tempErrors).length === 0 && !hasDateErrors;
     };
 
     const handleToggleExpand = (index: number) => {
@@ -445,6 +471,12 @@ const EditarFuncionario = () => {
                                         dataAniversario: newValue
                                     })
                                 }
+                                slotProps={{
+                                    textField: {
+                                        error: errorDataAniversario,
+                                        helperText: helperTextDataAniversario,
+                                    }
+                                }}
                                 format='DD/MM/YYYY'
                             />
                         </LocalizationProvider>
@@ -479,6 +511,12 @@ const EditarFuncionario = () => {
                                         dataAdmissao: newValue
                                     })
                                 }
+                                slotProps={{
+                                    textField: {
+                                        error: errorDataAdmissao,
+                                        helperText: helperTextDataAdmissao,
+                                    }
+                                }}
                                 format='DD/MM/YYYY'
                             />
                         </LocalizationProvider>

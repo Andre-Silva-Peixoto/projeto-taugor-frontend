@@ -28,7 +28,7 @@ import { Funcionario } from '../../types/Funcionario';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -36,6 +36,13 @@ const CadastrarFuncionarios = () => {
     const [idFuncionario, setIdFuncionario] = useState('');
     const [fotoPerfil, setFotoPerfil] = useState<File | null>(null);
     const [fotoUrl, setFotoUrl] = useState<string | null>(null);
+
+    const [errorDataAdmissao, setErrorDataAdmissao] = useState(false);
+    const [helperTextDataAdmissao, setHelperTextDataAdmissao] = useState('');
+
+    const [errorDataAniversario, setErrorDataAniversario] = useState(false);
+    const [helperTextDataAniversario, setHelperTextDataAniversario] = useState('');
+
     const [form, setForm] = useState<Funcionario>({
         id: '',
         nome: '',
@@ -107,28 +114,48 @@ const CadastrarFuncionarios = () => {
         else if (name === 'telefone') {
             const onlyNumbers = value.replace(/\D/g, '');
             const formattedPhone = onlyNumbers.slice(0, tamanhoMaximoCelular)
-              .replace(/^(\d{2})(\d)/g, '($1) $2')
-              .replace(/(\d{5})(\d)/, '$1-$2');
+                .replace(/^(\d{2})(\d)/g, '($1) $2')
+                .replace(/(\d{5})(\d)/, '$1-$2');
             setForm({ ...form, [name]: formattedPhone });
-          } else {
+        } else {
             setForm({ ...form, [name]: value });
         }
     };
 
     const validateForm = () => {
         let tempErrors: Partial<Funcionario> = {};
+        
         if (!form.nome) tempErrors.nome = "Nome é obrigatório";
         if (!form.sexo) tempErrors.sexo = "Sexo é obrigatório";
         if (!form.endereco) tempErrors.endereco = "Endereço é obrigatório";
         if (!form.telefone) tempErrors.telefone = "Telefone é obrigatório e deve ser válido (ex. 11987654321)";
-        //if (!form.dataAniversario) tempErrors.dataAniversario = "Data de Aniversário é obrigatória";
+    
+        // Validação de data de aniversário
+        if (!form.dataAniversario) {
+            setErrorDataAniversario(true);
+            setHelperTextDataAniversario("Data de aniversário é obrigatória");
+        } else {
+            setErrorDataAniversario(false);
+            setHelperTextDataAniversario("");
+        }
+    
+        // Validação de data de admissão
+        if (!form.dataAdmissao) {
+            setErrorDataAdmissao(true);
+            setHelperTextDataAdmissao("Data de Admissão é obrigatória");
+        } else {
+            setErrorDataAdmissao(false);
+            setHelperTextDataAdmissao("");
+        }
+    
         if (!form.cargo) tempErrors.cargo = "Cargo é obrigatório";
-        //if (!form.dataAdmissao) tempErrors.dataAdmissao = "Data de Admissão é obrigatória";
         if (!form.setor) tempErrors.setor = "Setor é obrigatório";
         if (!form.salario) tempErrors.salario = "Salário é obrigatório";
-
+    
         setErrors(tempErrors);
-        return Object.keys(tempErrors).length === 0;
+    
+        const hasDateErrors = !form.dataAniversario || !form.dataAdmissao;
+        return Object.keys(tempErrors).length === 0 && !hasDateErrors;
     };
 
     const handleUploadFoto = async () => {
@@ -317,6 +344,13 @@ const CadastrarFuncionarios = () => {
                                                 dataAniversario: newValue
                                             })
                                         }
+                                        maxDate={dayjs()}
+                                        slotProps={{
+                                            textField: {
+                                                error: errorDataAniversario,
+                                                helperText: helperTextDataAniversario,
+                                            }
+                                        }}
                                         format='DD/MM/YYYY'
                                     />
                                 </LocalizationProvider>
@@ -352,6 +386,12 @@ const CadastrarFuncionarios = () => {
                                                 dataAdmissao: newValue
                                             })
                                         }
+                                        slotProps={{
+                                            textField: {
+                                                error: errorDataAdmissao,
+                                                helperText: helperTextDataAdmissao,
+                                            }
+                                        }}
                                         format='DD/MM/YYYY'
                                     />
                                 </LocalizationProvider>
