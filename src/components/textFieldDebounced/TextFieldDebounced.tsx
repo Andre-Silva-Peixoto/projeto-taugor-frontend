@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { TextField, TextFieldProps } from '@mui/material';
 
 type Props = TextFieldProps & {
@@ -17,6 +17,11 @@ const TextFieldDebounced: React.FC<Props> = ({
 }) => {
   const [innerValue, setInnerValue] = useState<string>(typeof value === 'string' ? value : ""); 
 
+  useEffect(() => {
+    setInnerValue(typeof value === 'string' ? value : "");
+}, [value]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedChangeHandler = useCallback(
     debounce((newValue: string) => {
       if (name) {
@@ -44,7 +49,7 @@ function debounce<T>(func: (...params: T[]) => void, timeout = 300) {
   let timer: number;
 
   return (...args: T[]) => {
-    window.clearTimeout(timer);  // Limpa o timer anterior
-    timer = window.setTimeout(() => func(...args), timeout);  // Define um novo timer
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => func(...args), timeout); 
   };
 }

@@ -24,6 +24,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useNavigate } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 import { Funcionario } from '../../types/Funcionario';
+import { generateFuncionarioPDF } from '../../components/funcionarioPdf/FuncionarioPdf';
 
 const ListagemFuncionarios = () => {
     const [funcionarios, setFuncionarios] = useState<Funcionario[]>([]);
@@ -96,6 +97,14 @@ const ListagemFuncionarios = () => {
         setPage(0);
     };
 
+    const handleDownloadPdf = async (funcionario: Funcionario) => {
+        const pdfBlob = await generateFuncionarioPDF(funcionario);
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(pdfBlob);
+        link.download = `${funcionario.nome}-Curriculo.pdf`;
+        link.click();
+    };
+
     return (
         <Container maxWidth="lg" sx={{ mt: 4 }}>
             <Paper elevation={3} sx={{ mt: 2, padding: 2 }}>
@@ -151,7 +160,7 @@ const ListagemFuncionarios = () => {
                                         >
                                             <DeleteIcon />
                                         </IconButton>
-                                        <IconButton title="Baixar o perfil do funcionário como PDF">
+                                        <IconButton onClick={() => handleDownloadPdf(funcionario)} title="Baixar o perfil do funcionário como PDF">
                                             <PictureAsPdfIcon />
                                         </IconButton>
                                     </TableCell>

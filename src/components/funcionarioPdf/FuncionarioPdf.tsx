@@ -6,6 +6,75 @@ import '@react-pdf-viewer/core/lib/styles/index.css';
 import { Box, Button, Typography } from '@mui/material';
 import dayjs from 'dayjs';
 
+export const generateFuncionarioPDF = async (funcionario: Funcionario) => {
+    const pdfDoc = await PDFDocument.create();
+    const page = pdfDoc.addPage([600, 800]);
+    const { width, height } = page.getSize();
+    const fontSize = 12;
+
+    // Título
+    page.drawText('Currículo Profissional', {
+        x: 50,
+        y: height - 50,
+        size: 20,
+        color: rgb(0, 0, 0.8),
+    });
+
+    // Informação do perfil
+    const headerY = height - 100;
+    page.drawText(funcionario.nome, {
+        x: 50,
+        y: headerY,
+        size: 18,
+        color: rgb(0, 0, 0),
+    });
+
+    // Foto do perfil
+    if (funcionario.fotoPerfil) {
+        try {
+            const response = await fetch(funcionario.fotoPerfil);
+            const blob = await response.blob();
+            const base64Image = await new Promise<string>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result as string);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+            const image = await pdfDoc.embedPng(base64Image.split(',')[1]);
+            const imageDims = image.scale(0.2);
+            page.drawImage(image, {
+                x: width - imageDims.width - 50,
+                y: headerY - imageDims.height / 2,
+                width: imageDims.width,
+                height: imageDims.height,
+            });
+        } catch (error) {
+            console.error('Erro ao carregar a foto de perfil:', error);
+        }
+    }
+
+    // Dados pessoais e profissionais
+    page.drawText(`Sexo: ${funcionario.sexo}`, { x: 50, y: headerY - 40, size: fontSize });
+    page.drawText(`Endereço: ${funcionario.endereco}`, { x: 50, y: headerY - 60, size: fontSize });
+    page.drawText(`Telefone: ${funcionario.telefone}`, { x: 50, y: headerY - 80, size: fontSize });
+    page.drawText(`Data de Aniversário: ${funcionario.dataAniversario ? dayjs(funcionario.dataAniversario).format('DD/MM/YYYY') : ''}`, {
+        x: 50,
+        y: headerY - 100,
+        size: fontSize
+    });
+    page.drawText(`Cargo: ${funcionario.cargo}`, { x: 50, y: headerY - 140, size: fontSize });
+    page.drawText(`Data de Admissão: ${funcionario.dataAdmissao ? dayjs(funcionario.dataAdmissao).format('DD/MM/YYYY') : ''}`, {
+        x: 50,
+        y: headerY - 160,
+        size: fontSize
+    });
+    page.drawText(`Setor: ${funcionario.setor}`, { x: 50, y: headerY - 180, size: fontSize });
+    page.drawText(`Salário: R$ ${funcionario.salario}`, { x: 50, y: headerY - 200, size: fontSize });
+
+    const pdfBytes = await pdfDoc.save();
+    return new Blob([pdfBytes], { type: 'application/pdf' });
+};
+
 interface FuncionarioPdfProps {
     funcionario: Funcionario;
 }
